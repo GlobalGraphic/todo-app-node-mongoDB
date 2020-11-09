@@ -1,5 +1,16 @@
+require('dotenv').config();
 let express = require('express');
+let mongodb = require('mongodb');
 let app = express();
+let db;
+
+let connectionString = process.env.MONGO;
+
+mongodb.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, (err, client) => {
+    db = client.db();
+    app.listen(2820);
+});
+
 app.use(express.urlencoded({extended: false}));
 
 app.get('/',(req,res) => {
@@ -56,9 +67,10 @@ app.get('/',(req,res) => {
     `);
 });
 
+// listening for form submiting
 app.post('/create-item', (req,res) => {
-    console.log(req.body.item);
-    res.send('Thanks');
+    // creating db var and inserting data into MongoDB
+    db.collection('items').insertOne({text: req.body.item}, () => {
+        res.send('Thanks for submiting the form.');
+    });
 });
-
-app.listen(2820);
