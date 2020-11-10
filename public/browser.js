@@ -1,3 +1,4 @@
+// edit functionality
 document.addEventListener("click", (ev) => {
     if(ev.target.classList.contains("edit-me")){
         // get user input from prompt and save it to the var
@@ -10,7 +11,16 @@ document.addEventListener("click", (ev) => {
                 alert(err);
             });
         }else {
-            ev.target.parentElement.parentElement.querySelector('.item-text').innerHTML
+            ev.target.parentElement.parentElement.querySelector('.item-text').innerHTML;
         }
+    }
+});
+
+document.getElementById('items_form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if(document.getElementById('item_text_add').value === ""){
+        alert('You must enter something !');
+    }else {
+        document.getElementById('items_form').submit();
     }
 });
