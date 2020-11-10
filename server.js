@@ -5,6 +5,7 @@ let sanitizeHTML = require('sanitize-html');
 let app = express();
 let db;
 let port = process.env.PORT || 2820;
+let distDir = __dirname + "/public/";
 
 let connectionString = process.env.MONGO;
 
@@ -13,7 +14,7 @@ mongodb.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: tr
     app.listen(port);
 });
 
-app.use(express.static('public'));  
+app.use(express.static(distDir));  
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
