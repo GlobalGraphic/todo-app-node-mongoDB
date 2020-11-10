@@ -32,30 +32,18 @@ app.get('/',(req,res) => {
           <h1 class="display-4 text-center py-1">To-Do App</h1>
           
           <div class="jumbotron p-3 shadow-sm">
-            <form action="/create-item" method="POST" id="items_form">
+            <form action="/create-item" method="POST" id="create-form">
               <div class="d-flex align-items-center">
-                <input name="item" autofocus autocomplete="off" class="form-control mr-3" type="text" style="flex: 1;" id="item_text_add">
+                <input name="item" autofocus autocomplete="off" class="form-control mr-3" type="text" style="flex: 1;" id="create-field">
                 <button class="btn btn-primary">Add New Item</button>
               </div>
             </form>
           </div>
-          
-          <ul class="list-group pb-5">
-            ${items.map((item) => {
-              if(item.text != '') {
-                // looping over all data from database and insert them into return statement
-                return `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-                <span class="item-text">${item.text}</span>
-                <div>
-                  <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-                  <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
-                </div>
-                </li>`;
-              }
-            }).join('')}
-          </ul>
-          
+          <ul class="list-group pb-5" id="item-list"></ul>
         </div>
+      <script>
+        let items = ${JSON.stringify(items)};
+      </script>
       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
       <script src="/browser.js"></script>
       </body>
@@ -64,16 +52,16 @@ app.get('/',(req,res) => {
     });
 });
 
-// listening for form submiting
+// creating item
 app.post('/create-item', (req,res) => {
-  // creating db var and inserting data into MongoDB
-  if(req.body.text == ''){
-    res.redirect('/');
-  }else {
-    db.collection('items').insertOne({text: req.body.item}, () => {
-      res.redirect('/');
-    });
-  }
+  db.collection('items').insertOne({text: req.body.text}, (err, info) => {
+    res.json(info.ops[0]);
+
+    // display error if exist
+    if(err){
+      alert(err);
+    }
+  });
 });
 
 // updating item

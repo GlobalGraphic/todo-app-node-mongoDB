@@ -1,3 +1,41 @@
+// create feature
+let createField = document.getElementById('create-field');
+
+// item template function
+const itemTemplate = item => {
+    return `
+        <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+        <span class="item-text">${item.text}</span>
+        <div>
+            <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+            <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
+        </div>
+        </li>
+    `;
+};
+
+// initial page load render
+let ourHTML = items.map(item => {
+    return itemTemplate(item);
+}).join('');
+
+document.getElementById('item-list').insertAdjacentHTML("beforeend", ourHTML);
+
+document.getElementById('create-form').addEventListener('submit', e => {
+    e.preventDefault();
+    axios.post('/create-item', {text: createField.value}).then(response => {
+        // create the html for a new item
+        document.getElementById('item-list').insertAdjacentHTML('beforeend', itemTemplate(response.data));
+
+        // clear input field after submiting and add focus to input field
+        createField.value = "";
+        createField.focus();
+    }).catch(err => {
+        // handling error
+        alert(err);
+    });
+});
+
 document.addEventListener("click", (ev) => {
     // delete functionality
     if(ev.target.classList.contains("delete-me")){
@@ -27,15 +65,5 @@ document.addEventListener("click", (ev) => {
         }else {
             ev.target.parentElement.parentElement.querySelector('.item-text').innerHTML;
         }
-    }
-});
-
-// form validation
-document.getElementById('items_form').addEventListener('submit', e => {
-    e.preventDefault();
-    if(document.getElementById('item_text_add').value === ""){
-        alert('You must enter something !');
-    }else {
-        document.getElementById('items_form').submit();
     }
 });
