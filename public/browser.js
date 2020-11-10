@@ -1,5 +1,18 @@
-// edit functionality
 document.addEventListener("click", (ev) => {
+    // delete functionality
+    if(ev.target.classList.contains("delete-me")){
+        if(confirm("Do you really want to delete this item permanetly?")){
+            axios.post('/delete-item', {id: ev.target.getAttribute("data-id")}).then(() => {
+                // delete targeted element
+                ev.target.parentElement.parentElement.remove();
+            }).catch(err => {
+                // handling error
+                alert(err);
+            });
+        }
+    }
+
+    // edit functionality
     if(ev.target.classList.contains("edit-me")){
         // get user input from prompt and save it to the var
         let userInput = prompt("Enter your desired new text:", ev.target.parentElement.parentElement.querySelector('.item-text').innerHTML);
@@ -8,6 +21,7 @@ document.addEventListener("click", (ev) => {
                 // traverse two steps up of the dom and select the span that contains text and change it for new one
                 ev.target.parentElement.parentElement.querySelector('.item-text').innerHTML = userInput;
             }).catch(err => {
+                // handling error
                 alert(err);
             });
         }else {
@@ -16,7 +30,8 @@ document.addEventListener("click", (ev) => {
     }
 });
 
-document.getElementById('items_form').addEventListener('submit', (e) => {
+// form validation
+document.getElementById('items_form').addEventListener('submit', e => {
     e.preventDefault();
     if(document.getElementById('item_text_add').value === ""){
         alert('You must enter something !');
