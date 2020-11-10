@@ -4,7 +4,7 @@ let mongodb = require('mongodb');
 let sanitizeHTML = require('sanitize-html');
 let app = express();
 let db;
-let port = process.env.PORT || 2820
+let port = process.env.PORT || 2820;
 
 let connectionString = process.env.MONGO;
 
