@@ -1,4 +1,4 @@
-// create feature
+// create feature field
 let createField = document.getElementById('create-field');
 
 // item template function
@@ -18,9 +18,9 @@ const itemTemplate = item => {
 let ourHTML = items.map(item => {
     return itemTemplate(item);
 }).join('');
-
 document.getElementById('item-list').insertAdjacentHTML("beforeend", ourHTML);
 
+// listening for submiting the form
 document.getElementById('create-form').addEventListener('submit', e => {
     e.preventDefault();
     axios.post('/create-item', {text: createField.value}).then(response => {

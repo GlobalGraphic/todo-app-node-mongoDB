@@ -1,19 +1,32 @@
 require('dotenv').config();
 let express = require('express');
 let mongodb = require('mongodb');
+let sanitizeHTML = require('sanitize-html');
 let app = express();
 let db;
+let port = process.env.PORT || 2820
 
 let connectionString = process.env.MONGO;
 
 mongodb.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, (err, client) => {
     db = client.db();
-    app.listen(2820);
+    app.listen(port);
 });
 
 app.use(express.static('public'));  
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+
+// app security FN
+const passwordProtected = (req, res, next) => {
+  res.set('WWW-Authenticate', 'Basic realm="Simple Todo App"');
+  if(req.headers.authorization === process.env.LOGIN){
+    next();
+  }else {
+    res.status(401).send("Authentication required");
+  }
+}
+app.use(passwordProtected);
 
 app.get('/',(req,res) => {
     // requesting data from mongoDB
@@ -54,7 +67,9 @@ app.get('/',(req,res) => {
 
 // creating item
 app.post('/create-item', (req,res) => {
-  db.collection('items').insertOne({text: req.body.text}, (err, info) => {
+  // sanitize the entered text
+  let safeText = sanitizeHTML(req.body.text, {allowedTags: [], allowedAttributes: {}});
+  db.collection('items').insertOne({text: safeText}, (err, info) => {
     res.json(info.ops[0]);
 
     // display error if exist
@@ -66,7 +81,8 @@ app.post('/create-item', (req,res) => {
 
 // updating item
 app.post('/update-item', (req,res) => {
-  db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: req.body.text}}, () => {
+  let safeText = sanitizeHTML(req.body.text, {allowedTags: [], allowedAttributes: {}});
+  db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: safeText}}, () => {
     res.send("Success");
   });
 });
